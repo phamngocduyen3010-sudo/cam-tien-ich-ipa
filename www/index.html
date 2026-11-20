@@ -42,12 +42,14 @@
       transform: scaleX(-1);
     }
 
+    /* Tông ấm hồng nhẹ kiểu Fujifilm */
     video#preview.beauty-soft {
-      filter: brightness(1.04) contrast(0.97) saturate(1.04);
+      filter: brightness(1.05) contrast(0.96) saturate(1.10) sepia(0.12) hue-rotate(-10deg);
     }
 
+    /* Tông hồng rạng ấm hơn kiểu Fujifilm */
     video#preview.beauty-glow {
-      filter: brightness(1.08) contrast(0.94) saturate(1.08);
+      filter: brightness(1.08) contrast(0.94) saturate(1.16) sepia(0.16) hue-rotate(-14deg);
     }
 
     /* Định vị & thời gian to rõ ở góc dưới cùng bên trái */
@@ -206,8 +208,8 @@
         <span id="subTime">Bật</span>
       </button>
       <button class="side-btn active" id="btnBeauty" type="button">
-        <span class="icon">✨</span>
-        <span>Làm đẹp</span>
+        <span class="icon">🌸</span>
+        <span>Ấm hồng</span>
         <span id="subBeauty">Nhẹ</span>
       </button>
     </div>
@@ -237,8 +239,18 @@
     const facingMode = 'user';
     const beautyModes = [
       { key: 'off', label: 'Tắt', cssClass: '', filter: 'none' },
-      { key: 'soft', label: 'Nhẹ', cssClass: 'beauty-soft', filter: 'brightness(1.04) contrast(0.97) saturate(1.04)' },
-      { key: 'glow', label: 'Rạng', cssClass: 'beauty-glow', filter: 'brightness(1.08) contrast(0.94) saturate(1.08)' }
+      {
+        key: 'soft',
+        label: 'Nhẹ',
+        cssClass: 'beauty-soft',
+        filter: 'brightness(1.05) contrast(0.96) saturate(1.10) sepia(0.12) hue-rotate(-10deg)'
+      },
+      {
+        key: 'glow',
+        label: 'Rạng',
+        cssClass: 'beauty-glow',
+        filter: 'brightness(1.08) contrast(0.94) saturate(1.16) sepia(0.16) hue-rotate(-14deg)'
+      }
     ];
 
     let beautyIndex = 1;
@@ -275,7 +287,7 @@
         lines.push(`⚠️ ${cameraErrorText}`);
       }
       if (lines.length === 0) {
-        lines.push(`✨ Làm đẹp: ${beautyModes[beautyIndex].label}`);
+        lines.push(`🌸 Ấm hồng: ${beautyModes[beautyIndex].label}`);
       }
       return lines;
     }
