@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Camera Tiện Ích</title>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+    }
+    .stage {
+      position: relative; width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: #000;
+    }
+    video#preview {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: filter 0.2s ease, transform 0.2s ease;
+    }
+    video#preview.mirrored { transform: scaleX(-1); }
+    video#preview.beauty-soft { filter: brightness(1.04) contrast(0.97) saturate(1.04); }
+    video#preview.beauty-glow { filter: brightness(1.08) contrast(0.94) saturate(1.08); }
+
+    .status-badge {
+      position: fixed; top: 14px; left: 14px; z-index: 20;
+      background: rgba(0, 0, 0, 0.58); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px; padding: 8px 10px; font-size: 11px; line-height: 1.45;
+      max-width: 68%; white-space: pre-line; word-break: break-word;
+    }
+
+    /* 3 nút dọc sát cạnh phải */
+    .right-rail {
+      position: fixed; right: 10px; top: 50%; transform: translateY(-50%);
+      z-index: 30; display: flex; align-items: center; gap: 10px;
+    }
+    .popover {
+      background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 14px; padding: 12px; width: 175px; font-size: 12px;
+    }
+    .popover label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .popover .hint { font-size: 10px; color: #ccc; margin-top: 6px; word-break: break-word; }
+
+    .btn-stack { display: flex; flex-direction: column; gap: 14px; }
+    .side-btn {
+      width: 58px; height: 58px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(0, 0, 0, 0.6); color: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; font-size: 10px; font-weight: 600; cursor: pointer;
+    }
+    .side-btn.active { background: #ffd400; color: #000; border-color: #ffd400; }
+    .side-btn .icon { font-size: 16px; line-height: 1; }
+
+    /* Nút chụp chính ở chính giữa bên dưới */
+    .shutter-wrap {
+      position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%);
+      z-index: 25; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .shutter-btn {
+      width: 74px; height: 74px; border-radius: 50%;
+      border: 4px solid #fff; background: transparent; padding: 4px; cursor: pointer;
+    }
+    .shutter-inner { width: 100%; height: 100%; border-radius: 50%; background: #fff; }
+    .thumb {
+      position: fixed; bottom: 32px; left: 18px; z-index: 25;
+      width: 54px; height: 54px; border-radius: 10px; object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.6); background: #111; display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <video id="preview" autoplay playsinline muted class="mirrored beauty-soft"></video>
+  </div>
+
+  <div class="status-badge" id="statusBadge">Đang khởi tạo...</div>
+  <img id="lastPhoto" class="thumb" alt="Ảnh vừa chụp" />
+
+  <div class="right-rail">
+    <div class="popover" id="popover" style="display:none;"></div>
+    <div class="btn-stack">
+      <button class="side-btn active" id="btnLocation" type="button">
+        <span class="icon">📍</span><span>Định vị</span><span id="subLocation">Bật</span>
+      </button>
+      <button class="side-btn active" id="btnTime" type="button">
+        <span class="icon">🕒</span><span>Giờ thực</span><span id="subTime">Bật</span>
+      </button>
+      <button class="side-btn active" id="btnBeauty" type="button">
+        <span class="icon">✨</span><span>Làm đẹp</span><span id="subBeauty">Nhẹ</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="shutter-wrap">
+    <button class="shutter-btn" id="btnShutter" type="button" aria-label="Chụp ảnh">
+      <div class="shutter-inner"></div>
+    </button>
+  </div>
+
+  <script>
+    const video = document.getElementById('preview');
+    const statusBadge = document.getElementById('statusBadge');
+    const popover = document.getElementById('popover');
+    const lastPhoto = document.getElementById('lastPhoto');
+
+    const btnLocation = document.getElementById('btnLocation');
+    const btnTime = document.getElementById('btnTime');
+    const btnBeauty = document.getElementById('btnBeauty');
+    const btnShutter = document.getElementById('btnShutter');
+
+    const subLocation = document.getElementById('subLocation');
+    const subTime = document.getElementById('subTime');
+    const subBeauty = document.getElementById('subBeauty');
+
+    let locationEnabled = true;
+    let timeEnabled = true;
+    const beautyModes = ['off', 'soft', 'glow'];
+    const beautyLabels = { off: 'Tắt', soft: 'Nhẹ', glow: 'Vừa' };
+    const beautyFilters = {
+      off: 'none',
+      soft: 'brightness(1.04) contrast(0.97) saturate(1.04)',
+      glow: 'brightness(1.08) contrast(0.94) saturate(1.08)'
+    };
+
+    let beautyIndex = 1;
+    let facingMode = 'user';
+    let coordsText = '';
+    let activeMenu = null;
+
+    async function startCamera() {
+      if (video.srcObject) {
+        video.srcObject.getTracks().forEach(t => t.stop());
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        statusBadge.textContent = 'Trình duyệt không cấp cam qua HTTP thường';
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode },
+          audio: false
+        });
+        video.srcObject = stream;
+        video.classList.toggle('mirrored', facingMode === 'user');
+        applyBeautyClass();
+        updateStatus();
+      } catch (err) {
+        statusBadge.textContent = 'Không mở được cam: ' + err.message;
+      }
+    }
+
+    function requestLocation() {
+      if (!locationEnabled) {
+        coordsText = '';
+        updateStatus();
+        return;
+      }
+      if (!navigator.geolocation || !window.isSecureContext) {
+        coordsText = 'Cần HTTPS/localhost để lấy GPS';
+        updateStatus();
+        renderPopover();
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          coordsText = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+          updateStatus();
+          renderPopover();
+        },
+        () => {
+          coordsText = 'Chưa cấp/lấy được vị trí';
+          updateStatus();
+          renderPopover();
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+
+    function formatNow() {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      return `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    }
+
+    function applyBeautyClass() {
+      const mode = beautyModes[beautyIndex];
+      video.classList.remove('beauty-soft', 'beauty-glow');
+      if (mode === 'soft') video.classList.add('beauty-soft');
+      if (mode === 'glow') video.classList.add('beauty-glow');
+      btnBeauty.classList.toggle('active', mode !== 'off');
+      subBeauty.textContent = beautyLabels[mode];
+      updateStatus();
+    }
+
+    function updateStatus() {
+      const lines = [`Đẹp: ${beautyLabels[beautyModes[beautyIndex]]}`];
+      if (timeEnabled) lines.push(`Giờ: ${formatNow()}`);
+      if (locationEnabled) lines.push(
