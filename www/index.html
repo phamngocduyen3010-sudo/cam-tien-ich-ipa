@@ -3,93 +3,212 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Camera Tiện Ích</title>
+  <title>Cam Tiện Ích</title>
   <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body {
-      margin: 0; padding: 0; width: 100%; height: 100%;
-      background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      overflow: hidden;
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
     .stage {
-      position: relative; width: 100vw; height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: #000;
     }
+
     video#preview {
-      width: 100%; height: 100%; object-fit: cover;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       transition: filter 0.2s ease, transform 0.2s ease;
     }
-    video#preview.mirrored { transform: scaleX(-1); }
-    video#preview.beauty-soft { filter: brightness(1.04) contrast(0.97) saturate(1.04); }
-    video#preview.beauty-glow { filter: brightness(1.08) contrast(0.94) saturate(1.08); }
 
+    video#preview.mirrored {
+      transform: scaleX(-1);
+    }
+
+    video#preview.beauty-soft {
+      filter: brightness(1.04) contrast(0.97) saturate(1.04);
+    }
+
+    video#preview.beauty-glow {
+      filter: brightness(1.08) contrast(0.94) saturate(1.08);
+    }
+
+    /* Định vị & thời gian to rõ ở góc dưới cùng bên trái */
     .status-badge {
-      position: fixed; top: 14px; left: 14px; z-index: 20;
-      background: rgba(0, 0, 0, 0.58); border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 12px; padding: 8px 10px; font-size: 11px; line-height: 1.45;
-      max-width: 68%; white-space: pre-line; word-break: break-word;
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      z-index: 26;
+      background: rgba(0, 0, 0, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.5;
+      max-width: 68vw;
+      white-space: pre-line;
+      word-break: break-word;
+      backdrop-filter: blur(6px);
     }
 
     /* 3 nút dọc sát cạnh phải */
     .right-rail {
-      position: fixed; right: 10px; top: 50%; transform: translateY(-50%);
-      z-index: 30; display: flex; align-items: center; gap: 10px;
+      position: fixed;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .popover {
-      background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 14px; padding: 12px; width: 175px; font-size: 12px;
-    }
-    .popover label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .popover .hint { font-size: 10px; color: #ccc; margin-top: 6px; word-break: break-word; }
 
-    .btn-stack { display: flex; flex-direction: column; gap: 14px; }
-    .side-btn {
-      width: 58px; height: 58px; border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(0, 0, 0, 0.6); color: #fff;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 2px; font-size: 10px; font-weight: 600; cursor: pointer;
+    .popover {
+      background: rgba(15, 15, 15, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      padding: 12px;
+      width: 185px;
+      font-size: 12px;
     }
-    .side-btn.active { background: #ffd400; color: #000; border-color: #ffd400; }
-    .side-btn .icon { font-size: 16px; line-height: 1; }
+
+    .popover label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .popover .hint {
+      font-size: 11px;
+      color: #ccc;
+      margin-top: 6px;
+      word-break: break-word;
+    }
+
+    .btn-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .side-btn {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .side-btn.active {
+      background: #ffd400;
+      color: #000;
+      border-color: #ffd400;
+    }
+
+    .side-btn .icon {
+      font-size: 16px;
+      line-height: 1;
+    }
 
     /* Nút chụp chính ở chính giữa bên dưới */
     .shutter-wrap {
-      position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%);
-      z-index: 25; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
     }
+
     .shutter-btn {
-      width: 74px; height: 74px; border-radius: 50%;
-      border: 4px solid #fff; background: transparent; padding: 4px; cursor: pointer;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      background: transparent;
+      padding: 4px;
+      cursor: pointer;
     }
-    .shutter-inner { width: 100%; height: 100%; border-radius: 50%; background: #fff; }
+
+    .shutter-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    /* Đẩy ảnh thu nhỏ lên trên cụm định vị/giờ thực ở góc dưới trái */
     .thumb {
-      position: fixed; bottom: 32px; left: 18px; z-index: 25;
-      width: 54px; height: 54px; border-radius: 10px; object-fit: cover;
-      border: 2px solid rgba(255,255,255,0.6); background: #111; display: none;
+      position: fixed;
+      bottom: 116px;
+      left: 16px;
+      z-index: 25;
+      width: 54px;
+      height: 54px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      background: #111;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="stage">
-    <video id="preview" autoplay playsinline muted class="mirrored beauty-soft"></video>
+    <video id="preview" autoplay playsinline webkit-playsinline muted class="mirrored beauty-soft"></video>
   </div>
 
   <div class="status-badge" id="statusBadge">Đang khởi tạo...</div>
   <img id="lastPhoto" class="thumb" alt="Ảnh vừa chụp" />
 
   <div class="right-rail">
-    <div class="popover" id="popover" style="display:none;"></div>
+    <div class="popover" id="popover" style="display: none;"></div>
     <div class="btn-stack">
       <button class="side-btn active" id="btnLocation" type="button">
-        <span class="icon">📍</span><span>Định vị</span><span id="subLocation">Bật</span>
+        <span class="icon">📍</span>
+        <span>Định vị</span>
+        <span id="subLocation">Bật</span>
       </button>
       <button class="side-btn active" id="btnTime" type="button">
-        <span class="icon">🕒</span><span>Giờ thực</span><span id="subTime">Bật</span>
+        <span class="icon">🕒</span>
+        <span>Giờ thực</span>
+        <span id="subTime">Bật</span>
       </button>
       <button class="side-btn active" id="btnBeauty" type="button">
-        <span class="icon">✨</span><span>Làm đẹp</span><span id="subBeauty">Nhẹ</span>
+        <span class="icon">✨</span>
+        <span>Làm đẹp</span>
+        <span id="subBeauty">Nhẹ</span>
       </button>
     </div>
   </div>
@@ -115,87 +234,258 @@
     const subTime = document.getElementById('subTime');
     const subBeauty = document.getElementById('subBeauty');
 
-    let locationEnabled = true;
-    let timeEnabled = true;
-    const beautyModes = ['off', 'soft', 'glow'];
-    const beautyLabels = { off: 'Tắt', soft: 'Nhẹ', glow: 'Vừa' };
-    const beautyFilters = {
-      off: 'none',
-      soft: 'brightness(1.04) contrast(0.97) saturate(1.04)',
-      glow: 'brightness(1.08) contrast(0.94) saturate(1.08)'
-    };
+    const facingMode = 'user';
+    const beautyModes = [
+      { key: 'off', label: 'Tắt', cssClass: '', filter: 'none' },
+      { key: 'soft', label: 'Nhẹ', cssClass: 'beauty-soft', filter: 'brightness(1.04) contrast(0.97) saturate(1.04)' },
+      { key: 'glow', label: 'Rạng', cssClass: 'beauty-glow', filter: 'brightness(1.08) contrast(0.94) saturate(1.08)' }
+    ];
 
     let beautyIndex = 1;
-    let facingMode = 'user';
-    let coordsText = '';
-    let activeMenu = null;
+    let locationEnabled = true;
+    let timeEnabled = true;
+    let activePopover = null;
+    let coordsText = 'Đang lấy vị trí...';
+    let cameraErrorText = '';
 
-    async function startCamera() {
-      if (video.srcObject) {
-        video.srcObject.getTracks().forEach(t => t.stop());
-      }
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        statusBadge.textContent = 'Trình duyệt không cấp cam qua HTTP thường';
-        return;
-      }
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode },
-          audio: false
-        });
-        video.srcObject = stream;
-        video.classList.toggle('mirrored', facingMode === 'user');
-        applyBeautyClass();
-        updateStatus();
-      } catch (err) {
-        statusBadge.textContent = 'Không mở được cam: ' + err.message;
-      }
-    }
-
-    function requestLocation() {
-      if (!locationEnabled) {
-        coordsText = '';
-        updateStatus();
-        return;
-      }
-      if (!navigator.geolocation || !window.isSecureContext) {
-        coordsText = 'Cần HTTPS/localhost để lấy GPS';
-        updateStatus();
-        renderPopover();
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          coordsText = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-          updateStatus();
-          renderPopover();
-        },
-        () => {
-          coordsText = 'Chưa cấp/lấy được vị trí';
-          updateStatus();
-          renderPopover();
-        },
-        { enableHighAccuracy: true, timeout: 8000 }
-      );
+    function pad2(n) {
+      return String(n).padStart(2, '0');
     }
 
     function formatNow() {
       const now = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      return `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      const d = pad2(now.getDate());
+      const m = pad2(now.getMonth() + 1);
+      const y = now.getFullYear();
+      const hh = pad2(now.getHours());
+      const mm = pad2(now.getMinutes());
+      const ss = pad2(now.getSeconds());
+      return `${d}/${m}/${y} ${hh}:${mm}:${ss}`;
+    }
+
+    function getOverlayLines() {
+      const lines = [];
+      if (locationEnabled) {
+        lines.push(`📍 ${coordsText}`);
+      }
+      if (timeEnabled) {
+        lines.push(`🕒 ${formatNow()}`);
+      }
+      if (cameraErrorText) {
+        lines.push(`⚠️ ${cameraErrorText}`);
+      }
+      if (lines.length === 0) {
+        lines.push(`✨ Làm đẹp: ${beautyModes[beautyIndex].label}`);
+      }
+      return lines;
+    }
+
+    function updateStatus() {
+      statusBadge.textContent = getOverlayLines().join('\n');
+    }
+
+    function renderPopover() {
+      if (!activePopover) {
+        popover.style.display = 'none';
+        return;
+      }
+      popover.style.display = 'block';
+      if (activePopover === 'location') {
+        popover.innerHTML = `
+          <label>
+            <span>Gắn định vị</span>
+            <input type="checkbox" id="toggleLocInput" ${locationEnabled ? 'checked' : ''} />
+          </label>
+          <div class="hint">${coordsText}</div>
+        `;
+        const inp = document.getElementById('toggleLocInput');
+        inp.addEventListener('change', () => {
+          locationEnabled = inp.checked;
+          btnLocation.classList.toggle('active', locationEnabled);
+          subLocation.textContent = locationEnabled ? 'Bật' : 'Tắt';
+          if (locationEnabled) requestLocation();
+          updateStatus();
+        });
+      } else if (activePopover === 'time') {
+        popover.innerHTML = `
+          <label>
+            <span>Gắn giờ thực</span>
+            <input type="checkbox" id="toggleTimeInput" ${timeEnabled ? 'checked' : ''} />
+          </label>
+          <div class="hint">${formatNow()}</div>
+        `;
+        const inp = document.getElementById('toggleTimeInput');
+        inp.addEventListener('change', () => {
+          timeEnabled = inp.checked;
+          btnTime.classList.toggle('active', timeEnabled);
+          subTime.textContent = timeEnabled ? 'Bật' : 'Tắt';
+          updateStatus();
+        });
+      }
+    }
+
+    function fetchPositionOnce(highAccuracy) {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          resolve,
+          reject,
+          {
+            enableHighAccuracy: highAccuracy,
+            timeout: 10000,
+            maximumAge: 30000
+          }
+        );
+      });
+    }
+
+    async function requestLocation() {
+      if (!locationEnabled) return;
+      if (!navigator.geolocation) {
+        coordsText = 'Thiết bị không hỗ trợ định vị';
+        updateStatus();
+        renderPopover();
+        return;
+      }
+      coordsText = 'Đang lấy vị trí...';
+      updateStatus();
+      try {
+        let pos;
+        try {
+          pos = await fetchPositionOnce(true);
+        } catch (_) {
+          pos = await fetchPositionOnce(false);
+        }
+        const lat = pos.coords.latitude.toFixed(5);
+        const lon = pos.coords.longitude.toFixed(5);
+        coordsText = `${lat}, ${lon}`;
+      } catch (err) {
+        coordsText = `Chưa lấy được vị trí (${err.code || err.name})`;
+      }
+      updateStatus();
+      renderPopover();
     }
 
     function applyBeautyClass() {
       const mode = beautyModes[beautyIndex];
       video.classList.remove('beauty-soft', 'beauty-glow');
-      if (mode === 'soft') video.classList.add('beauty-soft');
-      if (mode === 'glow') video.classList.add('beauty-glow');
-      btnBeauty.classList.toggle('active', mode !== 'off');
-      subBeauty.textContent = beautyLabels[mode];
+      if (mode.cssClass) {
+        video.classList.add(mode.cssClass);
+      }
+      btnBeauty.classList.toggle('active', mode.key !== 'off');
+      subBeauty.textContent = mode.label;
       updateStatus();
     }
 
-    function updateStatus() {
-      const lines = [`Đẹp: ${beautyLabels[beautyModes[beautyIndex]]}`];
-      if (timeEnabled) lines.push(`Giờ: ${formatNow()}`);
-      if (locationEnabled) lines.push(
+    async function startCamera() {
+      if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        cameraErrorText = 'Trình duyệt không hỗ trợ camera';
+        updateStatus();
+        return;
+      }
+      try {
+        let stream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: facingMode } },
+            audio: false
+          });
+        } catch (_) {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+        }
+        cameraErrorText = '';
+        video.srcObject = stream;
+        video.playsInline = true;
+        video.muted = true;
+        video.classList.toggle('mirrored', facingMode === 'user');
+        await video.play();
+        applyBeautyClass();
+      } catch (err) {
+        cameraErrorText = `Lỗi cam (${err.name}): ${err.message}`;
+        updateStatus();
+      }
+    }
+
+    function capturePhoto() {
+      if (!video.videoWidth || !video.videoHeight) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+
+      ctx.save();
+      if (facingMode === 'user') {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+      ctx.filter = beautyModes[beautyIndex].filter;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      const lines = [];
+      if (locationEnabled) lines.push(`📍 ${coordsText}`);
+      if (timeEnabled) lines.push(`🕒 ${formatNow()}`);
+
+      if (lines.length > 0) {
+        const fontSize = Math.max(24, Math.round(canvas.height * 0.032));
+        const lineHeight = Math.round(fontSize * 1.4);
+        const padX = Math.round(fontSize * 0.8);
+        const padY = Math.round(fontSize * 0.6);
+        const boxHeight = lines.length * lineHeight + padY * 2;
+        const margin = Math.round(fontSize * 1.1);
+
+        ctx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
+        const maxTextWidth = Math.max(...lines.map(l => ctx.measureText(l).width));
+        const boxWidth = Math.min(canvas.width - margin * 2, maxTextWidth + padX * 2);
+        const boxX = margin;
+        const boxY = canvas.height - margin - boxHeight;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.68)';
+        ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+        ctx.fillStyle = '#fff';
+        ctx.textBaseline = 'top';
+        lines.forEach((line, idx) => {
+          ctx.fillText(line, boxX + padX, boxY + padY + idx * lineHeight, boxWidth - padX * 2);
+        });
+      }
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      lastPhoto.src = dataUrl;
+      lastPhoto.style.display = 'block';
+    }
+
+    btnLocation.addEventListener('click', () => {
+      activePopover = activePopover === 'location' ? null : 'location';
+      renderPopover();
+    });
+
+    btnTime.addEventListener('click', () => {
+      activePopover = activePopover === 'time' ? null : 'time';
+      renderPopover();
+    });
+
+    btnBeauty.addEventListener('click', () => {
+      beautyIndex = (beautyIndex + 1) % beautyModes.length;
+      applyBeautyClass();
+    });
+
+    btnShutter.addEventListener('click', capturePhoto);
+
+    setInterval(() => {
+      if (timeEnabled) {
+        updateStatus();
+      }
+    }, 1000);
+
+    applyBeautyClass();
+    requestLocation();
+    startCamera();
+  </script>
+</body>
+</html>
